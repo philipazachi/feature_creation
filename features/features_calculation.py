@@ -1,5 +1,19 @@
+from features.days_since_last_match import calculate_days_since_last_match
+from features.wins_between_players import count_wins_between_players
 from features.wins_in_court import calculate_win_percent_by_court, calculate_wins_by_court
 from features.wins_momentum import calculate_win_percent, calculate_wins_general
+
+
+def feature_diff_days_since_last_match(games_df):
+    games_df["player_1_last_match"] = games_df.apply(calculate_days_since_last_match, axis=1,
+                                                  args=('player_1_id', games_df)).fillna(1000)
+    games_df["player_2_last_match"] = games_df.apply(calculate_days_since_last_match, axis=1,
+                                                  args=('player_2_id', games_df)).fillna(1000)
+    return games_df['player_1_last_match'] - games_df['player_2_last_match']
+
+
+def feature_diff_wins_between_players(games_df, time_range):
+    return games_df.apply(count_wins_between_players, axis=1, args=(games_df, time_range))
 
 
 def feature_diff_wins_percent(games_df, time_range):
