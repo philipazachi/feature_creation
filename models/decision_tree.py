@@ -14,7 +14,7 @@ def train_decision_tree(games_df, features_names):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
     # Step 3: Select a model
-    model = DecisionTreeClassifier()
+    model = DecisionTreeClassifier(max_depth=6)
 
     # Step 4: Train the model
     model.fit(x_train, y_train)
