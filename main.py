@@ -5,6 +5,9 @@ from df_preperation import add_match_date_column, convert_column_names
 from features.features_calculation import feature_diff_percent_by_court, feature_diff_wins_by_court, \
     feature_diff_wins_percent, feature_diff_wins, feature_diff_wins_between_players, feature_diff_days_since_last_match
 from models.decision_tree import train_decision_tree
+from models.gradient_boosting import train_gradient_boosting
+from models.random_forests import train_random_forest
+from models.xgboost import train_xgboost
 
 
 def create_features(games_df):
@@ -31,6 +34,14 @@ def create_features(games_df):
     return games_df
 
 
+def get_train_test(games_df, features):
+    games_df = games_df.sort_values('match_date')
+    split_index = int(0.8 * len(games_df))
+    train_df = games_df[:split_index]
+    test_df = games_df[split_index:]
+    return train_df[features], test_df[features], train_df['predict'], test_df['predict']
+
+
 if __name__ == '__main__':
     # df = pd.read_csv('data/edited_data_with_attributes.csv')
     # df = convert_column_names(df)
@@ -46,5 +57,12 @@ if __name__ == '__main__':
                       'diff_rank_points', 'diff_percent_by_court', 'diff_wins_by_court', 'diff_wins_percent',
                       'diff_wins', 'diff_wins_between_players', 'diff_60_days_intensity',
                       'diff_retired_in_last_30_days', 'diff_number_of_days_since_last_played']
-    model, accuracy = train_decision_tree(df, features_names)
-    print("accuracy: " + str(accuracy))
+    x_train, x_test, y_train, y_test = get_train_test(df, features_names)
+    model, accuracy = train_decision_tree(df,  x_train, x_test, y_train, y_test)
+    print("decision tree accuracy: " + str(accuracy))
+    model, accuracy = train_random_forest(df, x_train, x_test, y_train, y_test)
+    print("random forests accuracy: " + str(accuracy))
+    model, accuracy = train_gradient_boosting(df, x_train, x_test, y_train, y_test)
+    print("gradient boosting accuracy: " + str(accuracy))
+    model, accuracy = train_xgboost(df, x_train, x_test, y_train, y_test)
+    print("xgboost accuracy: " + str(accuracy))

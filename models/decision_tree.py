@@ -5,21 +5,9 @@ from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 
 
-def train_decision_tree(games_df, features_names):
-    # Step 1: Prepare data
-    x = games_df[features_names]  # Features
-    y = games_df['predict']  # Target variable
-
-    # Step 2: Split the data into training and testing sets
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
-
-    # Step 3: Select a model
+def train_decision_tree(games_df, x_train, x_test, y_train, y_test):
     model = DecisionTreeClassifier(max_depth=6)
-
-    # Step 4: Train the model
     model.fit(x_train, y_train)
-
-    # Step 5: Evaluate the model
     y_pred = model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
 
