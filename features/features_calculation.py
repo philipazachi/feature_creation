@@ -1,14 +1,34 @@
 from features.days_since_last_match import calculate_days_since_last_match
+from features.player_intensity import calculate_player_intensity
+from features.player_retired import calculate_player_retired
 from features.wins_between_players import count_wins_between_players
 from features.wins_in_court import calculate_win_percent_by_court, calculate_wins_by_court
 from features.wins_momentum import calculate_win_percent, calculate_wins_general
 
 
+def feature_players_retired(games_df, time_range):
+    games_df["has_player_1_retired_in_last_30_days"] = games_df.apply(calculate_player_retired, axis=1,
+                                                                      args=(
+                                                                      'player_1_id', games_df, time_range)).fillna(0)
+    games_df["has_player_2_retired_in_last_30_days"] = games_df.apply(calculate_player_retired, axis=1,
+                                                                      args=(
+                                                                      'player_2_id', games_df, time_range)).fillna(0)
+    return games_df['has_player_1_retired_in_last_30_days'] - games_df['has_player_2_retired_in_last_30_days']
+
+
+def feature_intensity(games_df, time_range):
+    games_df["player_1_intensity"] = games_df.apply(calculate_player_intensity, axis=1,
+                                                    args=('player_1_id', games_df, time_range)).fillna(0)
+    games_df["player_2_intensity"] = games_df.apply(calculate_player_intensity, axis=1,
+                                                    args=('player_2_id', games_df, time_range)).fillna(0)
+    return games_df['player_1_intensity'] - games_df['player_2_intensity']
+
+
 def feature_diff_days_since_last_match(games_df):
     games_df["player_1_last_match"] = games_df.apply(calculate_days_since_last_match, axis=1,
-                                                  args=('player_1_id', games_df)).fillna(1000)
+                                                     args=('player_1_id', games_df)).fillna(1000)
     games_df["player_2_last_match"] = games_df.apply(calculate_days_since_last_match, axis=1,
-                                                  args=('player_2_id', games_df)).fillna(1000)
+                                                     args=('player_2_id', games_df)).fillna(1000)
     return games_df['player_1_last_match'] - games_df['player_2_last_match']
 
 

@@ -10,20 +10,21 @@ def train_decision_tree(games_df, x_train, x_test, y_train, y_test):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
+    # predictions_actuals_df = pd.DataFrame({
+    #     'Match_Num': games_df.loc[y_test.index, 'match_num'],
+    #     'Player_1_Name': games_df.loc[y_test.index, 'player_1_name'],
+    #     'Player_2_Name': games_df.loc[y_test.index, 'player_2_name'],
+    #     'Predicted': y_pred,
+    #     'Actual': y_test
+    # })
 
-    predictions_actuals_df = pd.DataFrame({
-        'Match_Num': games_df.loc[y_test.index, 'match_num'],
-        'Player_1_Name': games_df.loc[y_test.index, 'player_1_name'],
-        'Player_2_Name': games_df.loc[y_test.index, 'player_2_name'],
-        'Predicted': y_pred,
-        'Actual': y_test
-    })
-
-    # Save the DataFrame to a CSV file
-    predictions_actuals_df.to_csv('result/predictions_actuals.csv', index=False)
-    visualize_decision_tree(model, x_train)
-    show_feature_importance(model, x_train)
-    return model, accuracy
+    # x_test['model_predictions'] = y_pred
+    # x_test['player_1_won'] = y_test
+    # filtered_df = x_test[x_test['model_predictions'] != x_test['player_1_won']]
+    # filtered_df.to_csv('result/predictions_actuals.csv', index=False)
+    # visualize_decision_tree(model, x_train)
+    # show_feature_importance(model, x_train)
+    return accuracy, y_test, y_pred
 
 
 def predict_winner_decision_tree(game_features, model):

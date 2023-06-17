@@ -20,20 +20,17 @@ def calculate_win_percent_by_court(row, player_id, groups, num_of_days):
 def calculate_wins(row, player_id, groups, num_of_days):
     surface = row['surface']
     date = row['match_date']
-    player_1_id = row[player_id]
+    player = row[player_id]
 
     # filter the DataFrame to only include matches from the last 2 years for this player and this court
     two_years_ago = date - timedelta(days=num_of_days)
     court_matches = groups.get_group(surface)
-    last_two_years = court_matches[(court_matches['match_date'] >= two_years_ago) &
+    matches_played = court_matches[(court_matches['match_date'] >= two_years_ago) &
                                    (court_matches['match_date'] < date) & (
-                                           (court_matches['player_1_id'] == player_1_id) | (
-                                           court_matches['player_2_id'] == player_1_id))]
+                                           (court_matches['player_1_id'] == player) | ( court_matches['player_2_id'] == player))]
 
     # calculate the number of matches the player has won in the last 2 years for this court
-    wins = last_two_years[player_id].value_counts().get(player_1_id, 0)
+    wins = len(matches_played[(matches_played['player_1_id'] == player) & (matches_played['player_1_won'] == 1) |
+                   (matches_played['player_2_id'] == player) & (matches_played['player_1_won'] == 0)])
 
-    # calculate the total number of matches the player has played in the last 2 years for this court
-    matches_played = last_two_years['player_1_id'].value_counts().get(player_1_id, 0) + last_two_years[
-        'player_2_id'].value_counts().get(player_1_id, 0)
-    return wins, matches_played
+    return wins, len(matches_played)
