@@ -33,8 +33,6 @@ def train_models_per_type(games_df, x_train, x_test, y_train, y_test):
     arguments = (games_df, x_train, x_test, y_train, y_test)
     picked_accuracy = 0
     picked_model_name = ""
-    y_test = []
-    y_pred = []
     for model_name in models_options:
         model_accuracy, model_y_test, model_y_pred = models_options[model_name](*arguments)
         print(model_name, str(model_accuracy))

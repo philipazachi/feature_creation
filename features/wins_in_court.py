@@ -20,6 +20,7 @@ def calculate_win_percent_by_court(row, player_id, groups, num_of_days):
 def calculate_wins(row, player_id, groups, num_of_days):
     surface = row['surface']
     date = row['match_date']
+    print(date)
     player = row[player_id]
 
     # filter the DataFrame to only include matches from the last 2 years for this player and this court
