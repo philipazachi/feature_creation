@@ -1,8 +1,11 @@
-from models.adaboost import adaboost
+from models.svm import svm
+from models.quadratic_discriminant_analysis import quadratic_discriminant_analysis
+from models.adaboost import adaboost, adaboost_with_finetune
+from models.neural_networks import neural_networks
 from models.decision_tree import train_decision_tree
-from models.gradient_boosting import train_gradient_boosting
-from models.random_forests import train_random_forest
-from models.xgboost import train_xgboost
+from models.gradient_boosting import train_gradient_boosting, train_gradient_boosting_with_finetune
+from models.random_forests import train_random_forest, train_random_forest_with_finetune
+from models.xgboost import train_xgboost, train_xgboost_with_finetune
 
 
 def train_all_models(column_name, df, features_names):
@@ -15,20 +18,24 @@ def train_all_models(column_name, df, features_names):
         x_train, x_test, y_train, y_test = get_train_test(new_df, features_names)
         results[category] = train_models_per_type(new_df, x_train, x_test, y_train, y_test)
         accuracy_score += (results[category][1] * len(new_df) / len(df))
-    print(results)
-    print("accuracy:", accuracy_score)
+    print("different models:\n", results)
+    print("different models accuracy:", accuracy_score)
+    x_train, x_test, y_train, y_test = get_train_test(df, features_names)
+    result = train_models_per_type(df, x_train, x_test, y_train, y_test)
+    print("one model for all:", result)
     return results
 
 
 def train_models_per_type(games_df, x_train, x_test, y_train, y_test):
     models_options = {
         "decision_tree": train_decision_tree,
-        "random_forests": train_random_forest,
-        "gradient_boosting": train_gradient_boosting,
-        "adaboost": adaboost,
-        "xgboost": train_xgboost,
+        "random_forests": train_random_forest_with_finetune,
+        # "gradient_boosting": train_gradient_boosting_with_finetune,
+        "adaboost": adaboost_with_finetune,
+        "xgboost": train_xgboost_with_finetune,
         # "svm": svm,
-        # "QDA": quadratic_discriminant_analysis
+        # "QDA": quadratic_discriminant_analysis,
+        'neural_networks': neural_networks
     }
     arguments = (games_df, x_train, x_test, y_train, y_test)
     picked_accuracy = 0

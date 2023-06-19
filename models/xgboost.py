@@ -5,8 +5,6 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 
 
 def train_xgboost(games_df, x_train, x_test, y_train, y_test):
-    # find_best_hyperparameters(x_train, y_train)
-
     train_data = xgb.DMatrix(x_train, label=y_train)
     test_data = xgb.DMatrix(x_test, label=y_test)
 
@@ -27,24 +25,19 @@ def train_xgboost(games_df, x_train, x_test, y_train, y_test):
     return accuracy, y_test, y_pred
 
 
-def find_best_hyperparameters(X, y):
-    # Define the parameter grid to search over
+def train_xgboost_with_finetune(games_df, x_train, x_test, y_train, y_test):
     param_grid = {
-        'max_depth': [3, 5, 7],
-        'learning_rate': [1.5, 1.2, 1.1, 1, 0.9, 0.5, 0.1, 0.01, 0.001],
-        'n_estimators': [100, 200, 300],
-        'gamma': [0, 0.1, 0.2],
-        'subsample': [0.8, 1.0],
-        'colsample_bytree': [0.8, 1.0]
+        'max_depth': [3, 5, 7, 9],  # Example values for max_depth
+        'learning_rate': [0.1, 0.05, 0.01],  # Example values for learning_rate
+        'n_estimators': [100, 200, 300],  # Example values for n_estimators
+        'objective': ['binary:logistic', 'binary:logitraw']  # Example values for objective
     }
-
-    # Create an XGBoost classifier
-    xgb_model = xgb.XGBClassifier()
-
-    # Perform grid search using cross-validation
-    grid_search = GridSearchCV(estimator=xgb_model, param_grid=param_grid, cv=5)
-    grid_search.fit(X, y)
-
-    # Print the best hyperparameters and their corresponding score
-    print("Best Hyperparameters: ", grid_search.best_params_)
-    print("Best Score: ", grid_search.best_score_)
+    model = xgb.XGBClassifier()
+    grid_search = GridSearchCV(model, param_grid, cv=5)
+    grid_search.fit(x_train, y_train)
+    best_model = grid_search.best_estimator_
+    best_params = grid_search.best_params_
+    print(best_params)
+    y_pred = best_model.predict(x_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    return accuracy, y_test, y_pred
